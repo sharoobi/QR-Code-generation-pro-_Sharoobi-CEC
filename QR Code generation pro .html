@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sharoobi | Ultimate QR Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #8a2be2;
+      --primary-dark: #5f1e9c;
+      --primary-light: #a45aff;
+      --secondary: #ffd700;
+      --dark: #0f0c29;
+      --light: #f0f0f0;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --glass: rgba(138, 43, 226, 0.2);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--dark), var(--primary-dark));
+      color: var(--light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: rgba(15, 10, 40, 0.9);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass);
+      margin-bottom: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .logo {
+      font-size: 2.8rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+      text-shadow: 0 0 15px var(--primary);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    h1 {
+      color: var(--primary-light);
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+    }
+    
+    .tagline {
+      color: var(--light);
+      opacity: 0.8;
+      font-size: 0.95rem;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      color: var(--primary-light);
+      border-bottom-color: var(--secondary);
+    }
+    
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--primary-light);
+    }
+    
+    input, textarea, select, button {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--light);
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--glass);
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--glass);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button.secondary {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary-light);
+    }
+    
+    button.secondary:hover {
+      background: var(--glass);
+    }
+    
+    .qr-container {
+      margin: 25px 0;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      border: 1px dashed var(--glass);
+    }
+    
+    .qr-placeholder {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .qr-placeholder i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: var(--primary);
+    }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .actions button {
+      flex: 1;
+      min-width: 120px;
+    }
+    
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .color-picker input[type="color"] {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 2px solid var(--glass);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .option-group {
+      margin-bottom: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+    }
+    
+    .option-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .option-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    
+    .option-btn.active {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+    
+    .history-item {
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .history-item-content {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 15px;
+    }
+    
+    .history-item-date {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 3px;
+    }
+    
+    .history-item-actions {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .history-item-actions button {
+      width: auto;
+      padding: 5px 10px;
+      min-width: unset;
+      font-size: 0.8rem;
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: var(--success);
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      transform: translateX(150%);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      font-weight: 500;
+      max-width: 90%;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast.error {
+      background: var(--danger);
+    }
+    
+    .qr-code {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .signature {
+      text-align: center;
+      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+    
+    .signature a {
+      color: var(--secondary);
+      text-decoration: none;
+    }
+    
+    .signature a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Protection overlay */
+    .protection-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .protection-message {
+      background: var(--dark);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 30px var(--primary);
+    }
+    
+    .protection-message h2 {
+      color: var(--secondary);
+      margin-bottom: 15px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .logo {
+        font-size: 2.2rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .tab {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+      }
+      
+      .actions button {
+        min-width: 100%;
+      }
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-qrcode"></i>
+      </div>
+      <h1>Sharoobi QR Generator</h1>
+      <p class="tagline">Create stunning QR codes with advanced customization</p>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="generate">Generate</div>
+      <div class="tab" data-tab="customize">Customize</div>
+      <div class="tab" data-tab="history">History</div>
+    </div>
+    
+    <div class="tab-content active" id="generate-tab">
+      <div class="input-group">
+        <label for="text-input"><i class="fas fa-pen-alt"></i> Enter Text or URL</label>
+        <textarea id="text-input" placeholder="Type any text or URL here..."></textarea>
+      </div>
+      
+      <button id="generate-btn" onclick="generateQR()">
+        <i class="fas fa-qrcode"></i> Generate QR Code
+      </button>
+      
+      <div class="qr-container" id="qr-result">
+        <div class="qr-placeholder">
+          <i class="fas fa-qrcode"></i>
+          <p>Your QR code will appear here</p>
+        </div>
+      </div>
+      
+      <div class="actions" id="action-buttons" style="display: none;">
+        <button onclick="downloadQR()">
+          <i class="fas fa-download"></i> Download
+        </button>
+        <button class="secondary" onclick="copyQR()">
+          <i class="fas fa-copy"></i> Copy
+        </button>
+        <button class="secondary" onclick="shareQR()">
+          <i class="fas fa-share-alt"></i> Share
+        </button>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="customize-tab">
+      <div class="option-group">
+        <label><i class="fas fa-ruler-combined"></i> QR Size</label>
+        <select id="size">
+          <option value="150">Small (150x150)</option>
+          <option value="200">Medium (200x200)</option>
+          <option value="300" selected>Large (300x300)</option>
+          <option value="400">X-Large (400x400)</option>
+          <option value="500">XX-Large (500x500)</option>
+        </select>
+      </div>
+      
+      <div class="option-group">
+        <label><i class="fas fa-palette"></i> Colors</label>
+        <div class="color-picker">
+          <input type="color" id="qr-color" value="#000000">
+          <span>QR Color (Black)</span>
+        </div>
+        <div class="color-picker" style="margin-top: 10px;">
+          <input type="color" id="bg-color" value="#ffffff">
+          <span>Background (White)</span>
+        </div>
+      </div>
+      
+      <div class="option-group">
+        <label><i class="fas fa-image"></i> Logo (Optional)</label>
+        <input type="file" id="logo" accept="image/*">
+        <div style="margin-top: 10px;">
+          <label>Logo Size</label>
+          <select id="logo-size">
+            <option value="15">15% of QR</option>
+            <option value="20">20% of QR</option>
+            <option value="25" selected>25% of QR</option>
+            <option value="30">30% of QR</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="option-group">
+        <label><i class="fas fa-cog"></i> Advanced Settings</label>
+        <div style="margin-top: 10px;">
+          <label>Error Correction</label>
+          <select id="error-correction">
+            <option value="L">Low (7%)</option>
+            <option value="M">Medium (15%)</option>
+            <option value="Q">Quartile (25%)</option>
+            <option value="H" selected>High (30%)</option>
+          </select>
+        </div>
+      </div>
+      
+      <button onclick="applyCustomization()">
+        <i class="fas fa-check"></i> Apply Settings
+      </button>
+    </div>
+    
+    <div class="tab-content" id="history-tab">
+      <div id="history-list"></div>
+      <button onclick="clearHistory()" style="margin-top: 15px;">
+        <i class="fas fa-trash"></i> Clear History
+      </button>
+    </div>
+    
+    <div class="signature">
+      <p>Developed with ❤️ by <a href="https://github.com/sharoobi" target="_blank">Sharoobi</a></p>
+    </div>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+  
+  <!-- Protection Overlay (Hidden by default) -->
+  <div class="protection-overlay" id="protection-overlay" style="display: none;">
+    <div class="protection-message">
+      <h2><i class="fas fa-lock"></i> Code Protection</h2>
+      <p>This project is protected to prevent unauthorized copying.</p>
+      <p>Please contact the developer for collaboration opportunities.</p>
+      <button onclick="hideProtectionOverlay()" style="margin-top: 15px;">
+        I Understand
+      </button>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script>
+    // Developer Signature
+    console.log('%c✨ Sharoobi QR Generator ✨', 'font-size: 16px; color: #8a2be2; font-weight: bold;');
+    console.log('%c🚀 Version: 2.0 (2023)', 'color: #ffd700;');
+    console.log('%c👨‍💻 Developed by: Sharoobi', 'color: #a45aff;');
+    console.log('%c🌐 GitHub: https://github.com/sharoobi', 'color: #00ffe0;');
+    
+    // DOM Elements
+    const qrResult = document.getElementById("qr-result");
+    const historyList = document.getElementById("history-list");
+    const toast = document.getElementById("toast");
+    const actionButtons = document.getElementById("action-buttons");
+    const tabs = document.querySelectorAll(".tab");
+    const tabContents = document.querySelectorAll(".tab-content");
+    const protectionOverlay = document.getElementById("protection-overlay");
+    
+    // App Variables
+    let currentQR = null;
+    let history = JSON.parse(localStorage.getItem('qrHistory')) || [];
+    let settings = {
+      size: 300,
+      qrColor: "#000000",
+      bgColor: "#ffffff",
+      logoSize: 25,
+      errorCorrection: "H"
+    };
+    
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+      updateHistoryList();
+      setupTabSwitching();
+      setupProtection();
+      
+      // Load saved settings
+      const savedSettings = JSON.parse(localStorage.getItem('qrSettings'));
+      if (savedSettings) {
+        settings = savedSettings;
+        document.getElementById("size").value = settings.size;
+        document.getElementById("qr-color").value = settings.qrColor;
+        document.getElementById("bg-color").value = settings.bgColor;
+        document.getElementById("logo-size").value = settings.logoSize;
+        document.getElementById("error-correction").value = settings.errorCorrection;
+      }
+    });
+    
+    // Setup Tab Switching
+    function setupTabSwitching() {
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          
+          tab.classList.add('active');
+          document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+        });
+      });
+    }
+    
+    // Setup Protection
+    function setupProtection() {
+      // Disable right click
+      document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        showProtectionOverlay();
+      });
+      
+      // Disable Ctrl+U, Ctrl+S
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && (e.key === 'u' || e.key === 's')) {
+          e.preventDefault();
+          showProtectionOverlay();
+        }
+      });
+      
+      // Detect copy attempts
+      document.addEventListener('copy', (e) => {
+        if (window.getSelection().toString().length > 50) {
+          e.preventDefault();
+          showToast("Please respect the developer's work!", "error");
+        }
+      });
+    }
+    
+    function showProtectionOverlay() {
+      protectionOverlay.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    }
+    
+    function hideProtectionOverlay() {
+      protectionOverlay.style.display = "none";
+      document.body.style.overflow = "auto";
+      showToast("Thank you for respecting developer rights!");
+    }
+    
+    // Generate QR Code
+    async function generateQR() {
+      const text = document.getElementById("text-input").value.trim();
+      if (!text) {
+        showToast("Please enter some text first!", "error");
+        return;
+      }
+      
+      try {
+        // Update settings
+        settings.size = parseInt(document.getElementById("size").value);
+        settings.qrColor = document.getElementById("qr-color").value;
+        settings.bgColor = document.getElementById("bg-color").value;
+        settings.logoSize = parseInt(document.getElementById("logo-size").value);
+        settings.errorCorrection = document.getElementById("error-correction").value;
+        
+        localStorage.setItem('qrSettings', JSON.stringify(settings));
+        
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = settings.size;
+        canvas.height = settings.size;
+        
+        // Create QR Code
+        await QRCode.toCanvas(canvas, text, {
+          width: settings.size,
+          color: {
+            dark: settings.qrColor,
+            light: settings.bgColor
+          },
+          errorCorrectionLevel: settings.errorCorrection
+        });
+        
+        // Add logo if selected
+        const logoFile = document.getElementById("logo").files[0];
+        if (logoFile) {
+          await addLogoToQR(canvas, logoFile);
+        }
+        
+        // Display QR
+        qrResult.innerHTML = "";
+        canvas.classList.add("qr-code");
+        qrResult.appendChild(canvas);
+        
+        // Update UI
+        currentQR = canvas;
+        actionButtons.style.display = "flex";
+        
+        // Add to history
+        addToHistory(text);
+        showToast("QR Code generated successfully!");
+        
+      } catch (error) {
+        console.error("QR Generation Error:", error);
+        showToast("Failed to generate QR: " + error.message, "error");
+        qrResult.innerHTML = `
+          <div class="qr-placeholder" style="color: #ff6b6b;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Failed to generate QR</p>
+            <p style="font-size: 0.8rem;">${error.message || ""}</p>
+          </div>
+        `;
+      }
+    }
+    
+    // Add Logo to QR
+    async function addLogoToQR(canvas, logoFile) {
+      return new Promise((resolve, reject) => {
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        
+        img.onload = () => {
+          try {
+            const logoSize = (settings.size * settings.logoSize) / 100;
+            const x = (canvas.width - logoSize) / 2;
+            const y = (canvas.height - logoSize) / 2;
+            
+            // Create circular mask
+            const logoCanvas = document.createElement('canvas');
+            logoCanvas.width = logoSize;
+            logoCanvas.height = logoSize;
+            const logoCtx = logoCanvas.getContext('2d');
+            
+            logoCtx.beginPath();
+            logoCtx.arc(logoSize/2, logoSize/2, logoSize/2, 0, Math.PI * 2);
+            logoCtx.closePath();
+            logoCtx.clip();
+            logoCtx.drawImage(img, 0, 0, logoSize, logoSize);
+            
+            // Draw logo on QR
+            ctx.drawImage(logoCanvas, x, y, logoSize, logoSize);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        };
+        
+        img.onerror = () => reject(new Error("Failed to load logo image"));
+        img.src = URL.createObjectURL(logoFile);
+      });
+    }
+    
+    // Apply Customization
+    function applyCustomization() {
+      if (currentQR) {
+        generateQR();
+      } else {
+        showToast("Please generate a QR code first", "error");
+      }
+    }
+    
+    // Download QR
+    function downloadQR() {
+      if (!currentQR) {
+        showToast("No QR code to download", "error");
+        return;
+      }
+      
+      const link = document.createElement("a");
+      link.download = `sharoobi-qr-${new Date().getTime()}.png`;
+      link.href = currentQR.toDataURL("image/png");
+      link.click();
+      showToast("QR code downloaded!");
+    }
+    
+    // Copy QR to Clipboard
+    function copyQR() {
+      if (!currentQR) {
+        showToast("No QR code to copy", "error");
+        return;
+      }
+      
+      currentQR.toBlob(blob => {
+        navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]).then(() => {
+          showToast("QR code copied to clipboard!");
+        }).catch(err => {
+          console.error("Copy failed:", err);
+          showToast("Failed to copy QR", "error");
+        });
+      });
+    }
+    
+    // Share QR
+    async function shareQR() {
+      if (!currentQR || !navigator.share) {
+        showToast("Web Share API not supported", "error");
+        return;
+      }
+      
+      try {
+        const blob = await new Promise(resolve => {
+          currentQR.toBlob(resolve);
+        });
+        
+        const file = new File([blob], 'sharoobi-qr.png', { type: 'image/png' });
+        
+        await navigator.share({
+          title: 'Check out this QR code',
+          text: 'Generated with Sharoobi QR Generator',
+          files: [file]
+        });
+      } catch (err) {
+        console.error("Share failed:", err);
+        showToast("Sharing cancelled", "error");
+      }
+    }
+    
+    // History Functions
+    function addToHistory(text) {
+      // Avoid duplicates
+      if (history.some(item => item.text === text)) return;
+      
+      history.unshift({
+        text: text,
+        timestamp: Date.now()
+      });
+      
+      // Keep only last 50 items
+      if (history.length > 50) history.pop();
+      
+      localStorage.setItem('qrHistory', JSON.stringify(history));
+      updateHistoryList();
+    }
+    
+    function updateHistoryList() {
+      historyList.innerHTML = "";
+      
+      if (history.length === 0) {
+        historyList.innerHTML = `<p style="text-align: center; color: rgba(255,255,255,0.5);">No history yet</p>`;
+        return;
+      }
+      
+      history.forEach((item, index) => {
+        const entry = document.createElement("div");
+        entry.className = "history-item";
+        
+        const date = new Date(item.timestamp).toLocaleString();
+        
+        entry.innerHTML = `
+          <div class="history-item-content">
+            ${item.text}
+            <div class="history-item-date">${date}</div>
+          </div>
+          <div class="history-item-actions">
+            <button onclick="useHistoryItem(${index})" title="Use">
+              <i class="fas fa-redo"></i>
+            </button>
+            <button onclick="deleteHistoryItem(${index})" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+        
+        historyList.appendChild(entry);
+      });
+    }
+    
+    function useHistoryItem(index) {
+      if (index >= 0 && index < history.length) {
+        document.getElementById("text-input").value = history[index].text;
+        document.querySelector('.tab[data-tab="generate"]').click();
+        showToast("Text loaded from history");
+      }
+    }
+    
+    function deleteHistoryItem(index) {
+      if (index >= 0 && index < history.length) {
+        history.splice(index, 1);
+        localStorage.setItem('qrHistory', JSON.stringify(history));
+        updateHistoryList();
+        showToast("Item removed from history");
+      }
+    }
+    
+    function clearHistory() {
+      if (confirm("Are you sure you want to clear all history?")) {
+        history = [];
+        localStorage.removeItem('qrHistory');
+        updateHistoryList();
+        showToast("History cleared");
+      }
+    }
+    
+    // Show Toast Message
+    function showToast(message, type = "success") {
+      toast.textContent = message;
+      toast.className = "toast";
+      toast.classList.add(type, "show");
+      
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+    
+    // Easter Egg
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIndex = 0;
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        
+        if (konamiIndex === konamiCode.length) {
+          showToast("Konami code activated! 🎮", "success");
+          document.body.style.animation = "rainbow 5s infinite";
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    });
+  </script>
+</body>
+</html>
